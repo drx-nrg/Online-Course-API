@@ -54,9 +54,33 @@ class CompletedLessonsController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, $lesson_id)
     {
-        //
+        $user = Auth::guard("user")->user();
+        if(is_null($user)) 
+            return $this->forbidden();
+
+        $lesson = Lessons::find($lesson_id);
+        if(is_null($lesson)) 
+            return $this->notfound();
+
+        $completed_lesson = CompletedLessons::where("user_id", $user->id)->where('lesson_id', $lesson_id)->first();
+        if(!is_null($completed_lesson)) 
+            return response()->json([
+                "status" => "error",
+                "message" => "You already completed this lesson"
+            ], 400);
+
+
+        CompletedLessons::create([
+            "user_id" => $user->id,
+            "lesson_id" => $lesson->id
+        ]);
+
+        return response()->json([
+            "status" => "success",
+            "message" => "Lesson successfully completed"
+        ], 200);
     }
 
     /**

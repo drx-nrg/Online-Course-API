@@ -26,3 +26,4 @@ Route::post('/courses/{courses:slug}/register', [CoursesController::class, "regi
 Route::apiResource('/lessons', LessonsController::class)->middleware(CheckToken::class);
 Route::post('/lessons/{lesson_id}/contents/{content_id}/check', [LessonsController::class, "checkAnswer"])->middleware(CheckToken::class);
 Route::get('/users/progress', [CompletedLessonsController::class, 'index'])->middleware(CheckToken::class);
+Route::put('/lessons/{lesson_id}/complete', [CompletedLessonsController::class, "store"])->middleware(CheckToken::class);

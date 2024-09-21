@@ -148,14 +148,6 @@ class LessonsController extends Controller
         if(is_null(Auth::guard("user")->user())) 
             return $this->forbidden();
 
-        $validator = Validator::make($request->all(), [
-            "option_id" => ["required","exists:options,id"]
-        ]);
-
-        if($validator->fails()){
-            return $this->validateFails($validator->errors());
-        }
-
         $lesson = Lessons::find($lesson_id);
         if(is_null($lesson)){
             return $this->notfound();
@@ -172,7 +164,15 @@ class LessonsController extends Controller
                 "message" => "Only for quiz content"
             ], 200);
         }
-        
+
+        $validator = Validator::make($request->all(), [
+            "option_id" => ["required","exists:options,id"]
+        ]);
+
+        if($validator->fails()){
+            return $this->validateFails($validator->errors());
+        }
+
         $option = Options::find($request->option_id);
         if(is_null($option)){
             return $this->notfound();
@@ -181,7 +181,7 @@ class LessonsController extends Controller
         $data = [
             "question" => $lesson_content->content,
             "user_answer" => $option->option_text,
-            "is_correct" => $option->is_correct
+            "is_correct" => $option->is_correct ? true : false
         ];
 
         return response()->json([
